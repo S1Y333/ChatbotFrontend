@@ -4,5 +4,6 @@ This frontend is part of my WP AI chatbot assistant development and this reposit
 
 ## Roadmap
   1. set up the frame for React frontend
+  npm install @azure/core-auth
   2. connect to AI
   3. polish frontend to be chatbubbles
