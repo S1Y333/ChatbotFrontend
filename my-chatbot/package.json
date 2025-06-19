@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@azure/ai-agents": "^1.0.0-beta.4",
+    "@azure/ai-projects": "^1.0.0-beta.4",
+    "@azure/core-auth": "^1.9.0",
+    "@azure/identity": "^4.8.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",

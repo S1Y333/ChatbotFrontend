@@ -1,25 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { initAgent, sendMessageToAgent } from './services/agentService';
+// Adjust the import based on your config file
+import type { MessageTextContent} from "@azure/ai-agents";
 
-const Chatbox: React.FC = () => {
+
+
+const Chatbox: React.FC =  () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ sender: 'user' | 'bot'; text: string }[]>([]);
   const [input, setInput] = useState('');
+  const [agentReady, setAgentReady] = useState(false);
+ 
 
   const toggleChat = () => setIsOpen(!isOpen);
 
+   useEffect(() => {
+    initAgent()
+      .then(() => setAgentReady(true))
+      .catch((err) => {
+        setAgentReady(false);
+        console.error(err);
+      });
+  }, []);
+
+  // connect to Azure AI Agents
+  
+
+    
+
+
   const sendMessage = async () => {
     if (!input.trim()) return;
+    if (!agentReady) {
+      setMessages(prev => [...prev, { sender: 'bot', text: "⚠️ Agent is still initializing. Please wait..." }]);
+      return;
+    }
     const userMessage: { sender: 'user' | 'bot'; text: string } = { sender: 'user', text: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    
+    // use user entered message to create a new message in the thread
+    try {
+      const aiResponse = await sendMessageToAgent(userMessage.text);
+      const botReply: { sender: 'user' | 'bot'; text: string } = { sender: 'bot', text: aiResponse };
+      setMessages(prev => [...prev, botReply]);
+    } catch (err) {
+      setMessages(prev => [...prev, { sender: 'bot', text: "⚠️ Failed to get response." }]);
+      console.error(err);
+    }
 
     // Simulate AI response (replace with API call)
-    setTimeout(() => {
-      const botReply: { sender: 'user' | 'bot'; text: string } = { sender: 'bot', text: `AI: You said "${userMessage.text}"` };
-      setMessages(prev => [...prev, botReply]);
-    }, 800);
-  };
-
+  //   setTimeout(() => {
+  //     const botReply: { sender: 'user' | 'bot'; text: string } = { sender: 'bot', text: `AI: You said "${userMessage.text}"` };
+  //     setMessages(prev => [...prev, botReply]);
+  //   }, 800);
+  // };
+  }
   return (
     <div className="fixed bottom-6 right-6 z-50">
       {!isOpen && (
