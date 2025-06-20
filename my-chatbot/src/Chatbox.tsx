@@ -9,52 +9,25 @@ const Chatbox: React.FC =  () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ sender: 'user' | 'bot'; text: string }[]>([]);
   const [input, setInput] = useState('');
-  const [agentReady, setAgentReady] = useState(false);
+ 
  
 
   const toggleChat = () => setIsOpen(!isOpen);
 
-   useEffect(() => {
-    initAgent()
-      .then(() => setAgentReady(true))
-      .catch((err) => {
-        setAgentReady(false);
-        console.error(err);
-      });
-  }, []);
-
-  // connect to Azure AI Agents
-  
-
-    
-
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
-    if (!agentReady) {
-      setMessages(prev => [...prev, { sender: 'bot', text: "⚠️ Agent is still initializing. Please wait..." }]);
-      return;
-    }
-    const userMessage: { sender: 'user' | 'bot'; text: string } = { sender: 'user', text: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    
-    // use user entered message to create a new message in the thread
-    try {
-      const aiResponse = await sendMessageToAgent(userMessage.text);
-      const botReply: { sender: 'user' | 'bot'; text: string } = { sender: 'bot', text: aiResponse };
-      setMessages(prev => [...prev, botReply]);
-    } catch (err) {
-      setMessages(prev => [...prev, { sender: 'bot', text: "⚠️ Failed to get response." }]);
-      console.error(err);
-    }
+        if (!input.trim()) return;
+      setMessages(prev => [...prev, { sender: "user", text: input }]);
 
-    // Simulate AI response (replace with API call)
-  //   setTimeout(() => {
-  //     const botReply: { sender: 'user' | 'bot'; text: string } = { sender: 'bot', text: `AI: You said "${userMessage.text}"` };
-  //     setMessages(prev => [...prev, botReply]);
-  //   }, 800);
-  // };
+      const response = await fetch("http://localhost:8080/api/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input }),
+      });
+
+      const data = await response.json();
+      setMessages(prev => [...prev, { sender: "bot", text: data.reply }]);
+      setInput("");
   }
   return (
     <div className="fixed bottom-6 right-6 z-50">
