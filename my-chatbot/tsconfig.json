@@ -22,5 +22,6 @@
   },
   "include": [
     "src"
-, "../backend/src/config"  ]
+, "../backend/src/config",
+"src/**/*" ]
 }
