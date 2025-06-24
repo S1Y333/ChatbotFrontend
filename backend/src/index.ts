@@ -15,7 +15,9 @@ app.post("/api/agent", async (req, res) => {
 
   try {
     const aiResponse = await sendMessageToAgent(message);
+    console.log("AI Response:", aiResponse);
     res.json({ reply: aiResponse });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to get response from AI agent." });
