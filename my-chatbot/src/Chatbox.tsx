@@ -86,9 +86,9 @@ const Chatbox: React.FC =  () => {
               <div className="text-left mb-3">
                 <div className="inline-block p-2 bg-gray-200 text-gray-800 rounded-lg">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce animation-delay-100"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce animation-delay-200"></div>  
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse animation-delay-100"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse animation-delay-200"></div>  
                   </div>
                   
                 </div>
