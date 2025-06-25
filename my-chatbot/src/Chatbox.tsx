@@ -16,8 +16,10 @@ const Chatbox: React.FC =  () => {
     { id: 1, text: 'Hello! Welcome to Magnet website. How can I help you today?', sender: 'bot' }
   ]);
   const [input, setInput] = useState<string>('');
- 
- 
+  // typing status
+  const [isUserTyping, setIsUserTyping] = useState(false);
+  const [isBotThinking, setIsBotThinking] = useState(false);
+  let typingTimeout: NodeJS.Timeout;
 
   const toggleChat = () => setIsOpen(!isOpen);
 
@@ -26,14 +28,22 @@ const Chatbox: React.FC =  () => {
      if (event) event.preventDefault();
         if (!input.trim()) return;
       setMessages(prev => [...prev, { id: messages.length +1, sender: "user", text: input }]);
+      setInput('');
+      setIsUserTyping(false);
+      setIsBotThinking(true);
 
       const response = await fetch("http://localhost:8080/api/agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
       });
-      
+      if (!response.ok) {
+        setIsBotThinking(false);
+        console.error("Failed to get response from server");
+        return;
+      }
       const data = await response.json();
+      setIsBotThinking(false);
       console.log("Response from server:", data);
 
       setMessages(prev => [...prev, {  id: prev.length + 1,sender: "bot", text: data.reply }]);
@@ -51,8 +61,8 @@ const Chatbox: React.FC =  () => {
             onClick={toggleChat}
           >
             <h3 className="font-semibold">Magnet Chatbot</h3>
-            <button className="text-white focus:outline-none">
-              {isOpen ? '−' : '+'}
+            <button className="text-white focus:outline-none bg-red-700">
+              {isOpen ? 'X' : '+'}
             </button>
           </div>
           
@@ -72,6 +82,25 @@ const Chatbox: React.FC =  () => {
                 </div>
               </div>
             ))}
+            {isBotThinking && (
+              <div className="text-left mb-3">
+                <div className="inline-block p-2 bg-gray-200 text-gray-800 rounded-lg">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce animation-delay-100"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce animation-delay-200"></div>  
+                  </div>
+                  
+                </div>
+              </div>
+            )}
+            {isUserTyping && (
+              <div className="text-left mb-3">  
+                <div className="inline-block p-2 bg-red-200 text-white rounded-lg">
+                  Typing...
+                </div>
+              </div>
+             )}
           </div>
           
           {/* Input */}
@@ -80,7 +109,13 @@ const Chatbox: React.FC =  () => {
               <input
                 type="text"
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => {
+                  // for typing detection
+                   setInput(e.target.value);
+                    setIsUserTyping(true);
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => setIsUserTyping(false), 1000);
+                }}
                 placeholder="Type your message..."
                 className="flex-1 p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-red-600"
               />
