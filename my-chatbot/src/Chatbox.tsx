@@ -44,9 +44,12 @@ const Chatbox: React.FC =  () => {
       }
       const data = await response.json();
       setIsBotThinking(false);
-      console.log("Response from server:", data);
+      // console.log("Response from server:", data);
+      // Example in JavaScript/TypeScript
+const cleanText = data.reply.replace(/【\d+:\d+†source】/g, '');
 
-      setMessages(prev => [...prev, {  id: prev.length + 1,sender: "bot", text: data.reply }]);
+
+      setMessages(prev => [...prev, {  id: prev.length + 1,sender: "bot", text: cleanText }]);
       setInput("");
   }
 
