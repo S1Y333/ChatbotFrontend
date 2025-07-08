@@ -10,7 +10,8 @@ function App() {
   const navigate = useNavigate();
 
   return (
-    <div className="App">
+    // set app to have the full width and height of the screen
+    <div className="h-screen w-screen flex flex-col items-center justify-center bg-gray">
       <h1>Welcome</h1>
          <button onClick={() => navigate('/admin')}> Click to switch to admin dashboard</button>
       <Chatbox />
