@@ -1,6 +1,49 @@
 
-import React from 'react';
+import React, {useState} from 'react';
+
 const AdminDashboard : React.FC = () => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+ 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setSelectedFile(file || null);
+    setUploadMessage(null);
+    if (file) {
+      console.log("File selected:", file.name);
+    }
+  };
+
+ const handleUpload = async () => {
+    if (!selectedFile) {
+      setUploadMessage("Please select a file first.");
+      return;
+    }
+    setUploading(true);
+    setUploadMessage(null);
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await fetch('http://localhost:8080/api/upload-knowledge', {
+        method: 'POST',
+        body: formData,
+      });
+      if (response.ok) {
+        setUploadMessage("File uploaded successfully!");
+        setSelectedFile(null);
+      } else {
+        setUploadMessage("Upload failed. Please try again.");
+      }
+    } catch (error) {
+      setUploadMessage("An error occurred during upload.");
+      console.error(error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     // use tailwind css for styling
     <div className="">
@@ -42,7 +85,7 @@ const AdminDashboard : React.FC = () => {
        <div className="flex justify-end">
          {/* add a button to upload knowledge */}
           {/* add submit function to submit to the backend */}
-          
+
           <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             Upload Knowledge 
           </button>
