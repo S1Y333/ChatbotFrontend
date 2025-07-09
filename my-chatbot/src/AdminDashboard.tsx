@@ -52,6 +52,8 @@ const AdminDashboard : React.FC = () => {
         <p className="mb-6">This is the admin dashboard where you can manage the chatbot settings.</p>
         
         {/* List of current knowledge uploaded to the agent */}
+        {/* need to fetch from backend to get knowledge list */}
+        
         <div className="knowledge-list mb-6">
           <h2 className="text-xl font-semibold mb-2">Current Knowledge Base</h2>
           <ul className="list-disc pl-5">

@@ -11,19 +11,21 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
 
+// Test route to check if the server is running
+app.get("/", (req, res) => {
+  res.send("Server is running!");
+});
 
 
 app.get("/api/knowledgebase", async (req, res) => {
-  console.log("Route hit"); // Add this
-  res.json({ test: ["Test1", "Test2"] });
-
-  // try {
-  //   const knowledgeBase = await getKnowledgeBase();
-  //   res.json({ knowledgeBase });
-  // } catch (err) {
-  //   console.error(err);
-  //   res.status(500).json({ error: "Failed to fetch knowledge base." });
-  // }
+ 
+  try {
+    const knowledgeBase = await getKnowledgeBase();
+    res.json({ knowledgeBase });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch knowledge base." });
+  }
 });
 
 app.post("/api/agent", async (req, res) => {

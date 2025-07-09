@@ -1,6 +1,7 @@
 import { AgentsClient, MessageTextContent } from "@azure/ai-agents";
 import { DefaultAzureCredential } from "@azure/identity";
 import { projectEndpoint, agentId } from './config/env'; 
+import { json } from "stream/consumers";
 
 
 const credential = new DefaultAzureCredential();
@@ -8,10 +9,43 @@ const client = new AgentsClient(projectEndpoint, credential);
 
 // get client's knowledge base
 export async function getKnowledgeBase(): Promise<string[]> {
-  
-  return ['TestStore1', 'TestStore2'];
 
+  // Get the vector store ID from environment variables
+  const vectorStoreId = process.env.VECTORSTORE_ID;
 
+  // get vector store knowledge
+  if (!vectorStoreId) {
+    throw new Error("Vector store ID is not defined in environment variables.");
+  }
+
+  try {
+    // Fetch the vector store by ID
+    const files = await client.vectorStoreFiles.list(vectorStoreId);
+    
+
+    const ids: string[] = [];
+    for await (const file of files) {
+      //use file.id to get the content of the file
+      // GET {endpoint}/vector_stores/{vectorStoreId}/files/{fileId}?api-version=v1
+     const content = await client.vectorStoreFiles.get(vectorStoreId, file.id)
+    
+      console.log(`File ID: ${file.id}, Content: ${JSON.stringify(content)}`);
+            ids.push(file.id);
+    }
+    return ids;
+    // Check if the vector store has a knowledge base
+    // if (!vectorStore.knowledgeBase) {
+    //   console.warn("✅ No knowledge base found in the vector store.");
+    //   return [];
+    // }
+
+    // // Return the knowledge base content
+    // return vectorStore.knowledgeBase.content;
+  } catch (error) {
+    console.error("❌ Error fetching knowledge base:", error);
+    throw error;
+  }
+  // this code helps to list all vector stores, then I can use the vector store id to get the knowledge base
   // try {
   //   const vector_stores = client.vectorStores.list();
   //   const names: string[] = [];
@@ -32,21 +66,9 @@ export async function getKnowledgeBase(): Promise<string[]> {
   //   console.error("❌ Error fetching vector stores:", error);
   //   return [];
   // }
+
 }
 
-// export async function getKnowledgeBase(): Promise<string[]> {
-//   const vector_stores = client.vectorStores.list();
-//   const names: string[] = [];
-//   for await (const vector_store of vector_stores) {
-//     console.log("Vector Store id:", vector_store.id, "Name:", vector_store.name);
-//     names.push(vector_store.name);
-//   }
-//   return names;
-// }
-  // const knowledgeBase = await client.vectorStoreFiles.get();
-  // console.log("Knowledge Base:", JSON.stringify(knowledgeBase.data));
-  
-  // return knowledgeBase.data.map(item => item.filename);
 
 
 // upload knowledge to the agent
