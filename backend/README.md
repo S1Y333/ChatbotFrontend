@@ -3,4 +3,6 @@ Debugging notes:
 2. backend debugging steps: 
    - let function console.log to see if it connects the functions
    - 
-3. Todo: publish backend to Azure
+3. Todo: 
+- publish backend to Azure
+- upload files to agent vector store

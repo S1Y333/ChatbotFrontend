@@ -23,6 +23,7 @@ This frontend is part of my WP AI chatbot assistant development and this reposit
       - Send the file to backend using FormData and fetch when the user clicks "Upload Knowledge".
       - backend should handle the upload to Azure (Blob Storage, Azure AI, etc).
     - Read knowledge:
+      - due to the fact: can't retrieve the uploaded knowledge files once uploaded, so I need to add the capability when uploading knowledge to AI agent, also uploading to our own server, so we can review later.
       - Store the selected file in state.
       - Send the file to your backend using FormData and 
       - fetch when the user clicks "Upload Knowledge".
