@@ -1,9 +1,10 @@
 // entry point of express server
 // src/index.ts
 import express from "express";
+import multer from "multer";
 import cors from "cors";
 import { sendMessageToAgent } from "./agentService";
-import { getKnowledgeBase } from "./knowledgeService";
+import { uploadKnowledgeToAgent } from "./knowledgeService";
 
 const app = express();
 app.use(cors());
@@ -16,12 +17,17 @@ app.get("/", (req, res) => {
   res.send("Server is running!");
 });
 
+const upload = multer({ dest: "uploads/" }); 
 
-app.get("/api/knowledgebase", async (req, res) => {
+app.post("/api/knowledgebase", async (req, res): Promise<void> => {
  
   try {
-    const knowledgeBase = await getKnowledgeBase();
+   
+    // const filePath = "/uploads/swpp_knowledge.txt"; // Assuming the file is saved with this name
+    const knowledgeBase = await uploadKnowledgeToAgent();
     res.json({ knowledgeBase });
+      console.log("Knowledge base uploaded successfully:", knowledgeBase);
+  
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch knowledge base." });
@@ -37,8 +43,8 @@ app.post("/api/agent", async (req, res) => {
     res.json({ reply: aiResponse });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to get response from AI agent." });
+    console.error("Upload failed:", err);
+    res.status(500).json({ error: "Upload failed" });
   }
 });
 
