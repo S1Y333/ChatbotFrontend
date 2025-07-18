@@ -19,19 +19,21 @@ export async function uploadKnowledgeToAgent(): Promise<void> {
   //  const fileStream = fs.createReadStream();
 
   try {
-    // Upload the file first
-    const filePath = "./src/files/swpp_knowledge.txt";
-    const localFileStream = fs.createReadStream(filePath);
-    const file = await client.files.upload(localFileStream, "assistants", {
-      fileName: "swpp_knowledge.txt",
-    });
-    console.log(`Uploaded file, file ID: ${file.id}`);
-
+    // Upload the file first and sucess!
+    // const filePath = "./src/files/swpp_knowledge.txt";
+    // const localFileStream = fs.createReadStream(filePath);
+    // const file = await client.files.upload(localFileStream, "assistants", {
+    //   fileName: "swpp_knowledge.txt",
+    // });
+    // console.log(`Uploaded file, file ID: ${file.id}`);
+      
     
-    // const knowledgefile = await client.vectorStoreFiles.createAndPoll(vectorStoreId, fileStream  );
-
-    
-    // console.log(`Knowledge base ${JSON.stringify(knowledgefile)} uploaded successfully.`);
+   const knowledgefile = await client.vectorStoreFiles.createAndPoll(vectorStoreId, {
+    fileId: process.env.FILE_ID, // Use the file ID from environment variables
+   
+   }  );
+ 
+    console.log(`Knowledge base ${JSON.stringify(knowledgefile)} add to vector store successfully.`);
   } catch (error) {
     console.error("❌ Error uploading knowledge base:", error);
     throw error;
