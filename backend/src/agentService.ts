@@ -18,6 +18,7 @@ export async function sendMessageToAgent(userInput: string): Promise<string> {
   }
 
   await client.messages.create(threadId, "user",userInput,);
+  // question: how to decide when to close a thread from both backend and frontend?
 
   const run = await client.runs.create(threadId, agentId);
 

@@ -20,12 +20,12 @@ export async function uploadKnowledgeToAgent(): Promise<void> {
 
   try {
     // Upload the file first and sucess!
-    // const filePath = "./src/files/swpp_knowledge.txt";
-    // const localFileStream = fs.createReadStream(filePath);
-    // const file = await client.files.upload(localFileStream, "assistants", {
-    //   fileName: "swpp_knowledge.txt",
-    // });
-    // console.log(`Uploaded file, file ID: ${file.id}`);
+    const filePath = "./src/files/swpp_knowledge.txt"; //how to get the file path & name from 
+    const localFileStream = fs.createReadStream(filePath);
+    const file = await client.files.upload(localFileStream, "assistants", {
+      fileName: "swpp_knowledge.txt",
+    });
+    console.log(`Uploaded file, file ID: ${file.id}`);
       
     
    const knowledgefile = await client.vectorStoreFiles.createAndPoll(vectorStoreId, {
