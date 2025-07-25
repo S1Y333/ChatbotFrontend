@@ -42,24 +42,37 @@ export async function sendMessageToAgent(userInput: string): Promise<string> {
     throw new Error("AI agent run failed");
   }
 
-  // after the run completes, check if conversation is completed
-  if (isConversationComplete(userInput)) {
-    await closeThread(threadId);
-    threadId = null;
-  }
+  // after the run completes, The isConversationComplete() check should be placed after you've received the AI's response but before you return it to the client.
+  let aiResponse = "";
 
 //   const messages = await client.messages.list(threadId);
 //   const lastMessage = messages.items.find(msg => msg.role === "assistant");
   for await (const msg of client.messages.list(threadId)) {
     console.log(`Role: ${msg.role}`);
-    for (const contentItem of msg.content ?? []) {
-      if (contentItem.type === "text" && "text" in contentItem) {
-        return (contentItem as MessageTextContent).text.value;
-      }
+     if (msg.role === "assistant") {
+        for (const contentItem of msg.content ?? []) {
+          if (contentItem.type === "text" && "text" in contentItem) {
+            // return (contentItem as MessageTextContent).text.value;
+            aiResponse = (contentItem as MessageTextContent).text.value;
+            break; // found the response, exit loop
+          }
+        }
+        if (aiResponse) break;
     }
   }
+
+   if (!aiResponse) {
+    aiResponse = "No response from AI.";
+  } 
+
+  // check for conversation completion AFTER getting the AI response
+  if (isConversationComplete(userInput)) {
+    await closeThread(threadId);
+    threadId = null; // reset thread ID for next conversation
+    console.log("Conversation complete, thread closed.");
+  } 
 //   const content = lastMessage?.content?.[0] as MessageTextContent;
-  return "No response from AI.";
+  return aiResponse;
 }
 
 function cleanupThreads() {
@@ -72,7 +85,7 @@ function cleanupThreads() {
 }
 
 function isConversationComplete(input: string): boolean {
-  const endings = ["goodbye", "thanks", "no more questions", "that's all"];
+  const endings = ["goodbye", "thanks", "no more questions", "that's all", "thank you", "bye"];
   return endings.some(e => input.toLowerCase().includes(e));
 }
 
